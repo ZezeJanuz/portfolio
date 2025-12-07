@@ -27,6 +27,5 @@ public class Project
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    // 👉 nouveau : liste d’URLs d’images pour le projet
     public List<string> Images { get; set; } = new();
 }
