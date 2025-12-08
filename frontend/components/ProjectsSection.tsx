@@ -16,9 +16,7 @@ interface Project {
     createdAt?: string;
 }
 
-const API_URL =
-    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5267";
-
+const API_URL = "http://localhost:5001";
 const ProjectsSection: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
