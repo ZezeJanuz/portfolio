@@ -3,13 +3,17 @@
 import React, { useEffect, useState, useCallback } from "react";
 
 interface Project {
-    id: number | string;
+    id: string;               // Guid sérialisé en string
+    identifier: string;
     title: string;
-    description: string;
-    technologies?: string[];
+    shortDescription: string;
+    longDescription?: string;
+    technologies: string[];
     githubUrl?: string;
     liveUrl?: string;
-    images?: string[]; // ⬅️ optionnel : URLs d'images ("/projets/monprojet-1.png", etc.)
+    images?: string[];        // correspond à Images côté C#
+    isFeatured?: boolean;
+    createdAt?: string;
 }
 
 const API_URL =
@@ -28,7 +32,7 @@ const ProjectsSection: React.FC = () => {
                 setError(null);
                 const res = await fetch(`${API_URL}/api/Projects`);
                 if (!res.ok) throw new Error(`Erreur API: ${res.status}`);
-                const data = await res.json();
+                const data: Project[] = await res.json();
                 setProjects(data);
             } catch (e) {
                 console.error(e);
@@ -45,7 +49,7 @@ const ProjectsSection: React.FC = () => {
         setSelectedProject(null);
     }, []);
 
-    // Fermer avec ESC
+    // Fermer avec la touche Échap
     useEffect(() => {
         if (!selectedProject) return;
 
@@ -74,47 +78,57 @@ const ProjectsSection: React.FC = () => {
                 )}
 
                 <div className="projects-grid">
-                    {projects.map((project) => (
-                        <article
-                            key={project.id}
-                            className="project-card project-card-clickable"
-                            onClick={() => setSelectedProject(project)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") {
-                                    e.preventDefault();
-                                    setSelectedProject(project);
-                                }
-                            }}
-                            tabIndex={0}
-                            role="button"
-                            aria-label={`Voir les détails du projet ${project.title}`}
-                        >
-                            <h3 className="project-title">{project.title}</h3>
-                            <p className="project-description">
-                                {project.description}
-                            </p>
+                    {projects.map((project) => {
+                        const hasCardLinks = !!(project.githubUrl || project.liveUrl);
+                        const hasCardTech =
+                            Array.isArray(project.technologies) &&
+                            project.technologies.length > 0;
 
-                            {project.technologies && project.technologies.length > 0 && (
-                                <ul className="project-tags">
-                                    {project.technologies.map((tech) => (
-                                        <li key={tech} className="project-tag">
-                                            {tech}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
+                        return (
+                            <article
+                                key={project.id}
+                                className="project-card project-card-clickable"
+                                onClick={() => setSelectedProject(project)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                        e.preventDefault();
+                                        setSelectedProject(project);
+                                    }
+                                }}
+                                tabIndex={0}
+                                role="button"
+                                aria-label={`Voir les détails du projet ${project.title}`}
+                            >
+                                <h3 className="project-title">{project.title}</h3>
+                                <p className="project-description">
+                                    {project.shortDescription ??
+                                        project.longDescription ??
+                                        ""}
+                                </p>
 
-                            <div className="project-links">
-                                {project.githubUrl && (
-                                    <span className="project-link">Code</span>
+                                {hasCardTech && (
+                                    <ul className="project-tags">
+                                        {project.technologies.map((tech) => (
+                                            <li key={tech} className="project-tag">
+                                                {tech}
+                                            </li>
+                                        ))}
+                                    </ul>
                                 )}
-                                {project.liveUrl && (
-                                    <span className="project-link">Demo</span>
+
+                                {hasCardLinks && (
+                                    <div className="project-links">
+                                        {project.githubUrl && (
+                                            <span className="project-link">Code</span>
+                                        )}
+                                        {project.liveUrl && (
+                                            <span className="project-link">Live</span>
+                                        )}
+                                    </div>
                                 )}
-                                {/* les vrais liens sont dans la pop-up */}
-                            </div>
-                        </article>
-                    ))}
+                            </article>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -148,10 +162,16 @@ const ProjectsSection: React.FC = () => {
                             {selectedProject.title}
                         </h3>
 
-                        <p className="project-modal-description">
-                            {selectedProject.description}
-                        </p>
+                        {/* description = longDescription si dispo, sinon shortDescription */}
+                        {(selectedProject.longDescription ||
+                            selectedProject.shortDescription) && (
+                            <p className="project-modal-description">
+                                {selectedProject.longDescription ??
+                                    selectedProject.shortDescription}
+                            </p>
+                        )}
 
+                        {/* Technologies uniquement si la liste n'est pas vide */}
                         {selectedProject.technologies &&
                             selectedProject.technologies.length > 0 && (
                                 <div className="project-modal-section">
@@ -168,6 +188,7 @@ const ProjectsSection: React.FC = () => {
                                 </div>
                             )}
 
+                        {/* Images uniquement s'il y en a */}
                         {selectedProject.images &&
                             selectedProject.images.length > 0 && (
                                 <div className="project-modal-section">
@@ -187,28 +208,31 @@ const ProjectsSection: React.FC = () => {
                                 </div>
                             )}
 
-                        <div className="project-modal-section project-modal-links">
-                            {selectedProject.githubUrl && (
-                                <a
-                                    href={selectedProject.githubUrl}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="project-link"
-                                >
-                                    Voir le code
-                                </a>
-                            )}
-                            {selectedProject.liveUrl && (
-                                <a
-                                    href={selectedProject.liveUrl}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="project-link"
-                                >
-                                    Voir la démo
-                                </a>
-                            )}
-                        </div>
+                        {/* Liens uniquement si au moins un existe */}
+                        {(selectedProject.githubUrl || selectedProject.liveUrl) && (
+                            <div className="project-modal-section project-modal-links">
+                                {selectedProject.githubUrl && (
+                                    <a
+                                        href={selectedProject.githubUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="project-link"
+                                    >
+                                        Voir le code
+                                    </a>
+                                )}
+                                {selectedProject.liveUrl && (
+                                    <a
+                                        href={selectedProject.liveUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="project-link"
+                                    >
+                                        Voir la démo
+                                    </a>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
