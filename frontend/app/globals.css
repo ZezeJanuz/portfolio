@@ -720,6 +720,135 @@ main {
 }
 
 /* ===========================
+   PAGE PROJET
+   =========================== */
+
+.project-page {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.project-page-back {
+    font-size: 0.9rem;
+    color: var(--mint-dark);
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.project-page-back:hover {
+    text-decoration: underline;
+}
+
+.project-page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.project-page-eyebrow {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--mint-dark);
+    margin: 0;
+}
+
+.project-page-title {
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    letter-spacing: 0.04em;
+    margin: 0;
+    color: var(--black);
+}
+
+.project-page-subtitle {
+    margin: 0.4rem 0 0;
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.project-page-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.project-page-pill {
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    background: var(--mint);
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.project-page-meta-item {
+    font-size: 0.86rem;
+    color: var(--muted);
+}
+
+/* layout texte + colonne de droite */
+.project-page-content {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.project-page-main,
+.project-page-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+
+.project-page-section {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    padding: 1.2rem 1.4rem;
+}
+
+.section-alt .project-page-section {
+    /* léger contraste sur fond soft */
+    background: #ffffff;
+}
+
+.project-page-section-title {
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--mint-dark);
+    margin: 0 0 0.6rem;
+}
+
+.project-page-text {
+    font-size: 0.98rem;
+    line-height: 1.7;
+    color: var(--muted);
+}
+
+/* images */
+.project-page-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.8rem;
+}
+
+.project-page-image {
+    width: 100%;
+    display: block;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+}
+
+
+
+/* ===========================
    RESPONSIVE
    =========================== */
 
@@ -762,5 +891,15 @@ main {
 
     .projects-grid {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media (max-width: 800px) {
+        .project-page-content {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .project-page-section {
+            padding: 1rem 1rem;
+        }
     }
 }

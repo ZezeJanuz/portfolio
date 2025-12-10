@@ -1,3 +1,5 @@
+import "./globals.css"; // 🔴 AJOUTE ÇA EN HAUT
+
 export const metadata = {
     title: "Portfolio Louise Ducrocq",
     description: "Portfolio développeuse d’applications",
